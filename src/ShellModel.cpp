@@ -1,18 +1,18 @@
 #include "ShellModel.hh"
 
 using namespace arma;
+
 //Slater determinant vector contains sets of integers (enforces Pauli Principle)
 
-int constructSlaterDeterminants(std::vctor<std::vector<int>> slater_determinants, int num_particles,  std::vector<State> sp_states){
+int constructSlaterDeterminants(std::vector< std::vector<int> > slater_determinants, int num_particles,  std::vector<State> sp_states){
   //For right now I'm just manually making this
   std::vector<int> temp_sd; 
   if (num_particles % 2 != 0){
     std::cout << "ERROR: num_particles isn't even and can't be handled by this pairing model!" << std::endl;
     return -1;
   }
-  int num_pairs = num_particles/2;
-  for (int i = 1; i <= sp_states.size(); i++){
-    for (int j = i+1; j <= sp_states.size(); j++){
+  for (unsigned int i = 1; i <= sp_states.size(); i++){
+    for (unsigned int j = i+1; j <= sp_states.size(); j++){
       temp_sd.clear();
       temp_sd.push_back(i);
       temp_sd.push_back(j);
@@ -45,7 +45,7 @@ int readSingleParticleStates(std::string const &file_name, std::vector<State> &s
   return single_particle_states.size();
 }
 
-int buildHamiltonian(arma::mat &hamiltonian, std::vector<std::vector<int> slater_determinants, double interaction_strength, std::vector<State> const sp_states){
+int buildHamiltonian(arma::mat &hamiltonian, std::vector< std::vector<int> > slater_determinants, double interaction_strength, std::vector<State> const sp_states){
   int num_pairs = slater_determinants.at(0).size();
   int num_sp_states = sp_states.size();
   for (unsigned int alpha = 0; alpha < slater_determinants.size(); alpha++){
@@ -66,7 +66,7 @@ int buildHamiltonian(arma::mat &hamiltonian, std::vector<std::vector<int> slater
       for (int p = 1; p <= num_sp_states; p++){
         for (int q = 1; q <= num_sp_states; q++){
           std::vector<int>::iterator q_pos = std::find(beta_vec.begin(), beta_vec.end(), q);
-          if (it == beta_vec.end()){
+          if (q_pos == beta_vec.end()){
             continue;
           }
 
@@ -98,20 +98,8 @@ int buildHamiltonian(arma::mat &hamiltonian, std::vector<std::vector<int> slater
 
 int runShellModelCalculation(std::string single_particle_states_file_name, int num_particles, double interaction_strength){
 
-  const int MAX_NUM_SD = 100;
-  const int MAX_NUM_PARTICLES = 10;
   std::vector<State> single_particle_states;
-  std::vector<std::vector<int>> slater_determinants;
-  mat hamiltonian = zeros(num_slater_determinants, num_slater_determinants);
-  vec energies = zeros(num_slater_determinants,1);
-  vec eigenvectors = zeros(num_slater_determinants,1);
-
-
-  for (int i = 0; i < MAX_NUM_SD;i++){
-    for (int j = 0; j < MAX_NUM_PARTICLES; j++){
-      slater_determinants = 0;
-    }
-  }
+  std::vector< std::vector<int> > slater_determinants;
 
   if (readSingleParticleStates(single_particle_states_file_name, single_particle_states) == 0){
     std::cout << "ERROR: Failed to read in any states! Exiting." << std::endl;
@@ -122,11 +110,14 @@ int runShellModelCalculation(std::string single_particle_states_file_name, int n
   //Determinants with known values
   //Need way to know number of slater determinants; this means I think that a vector
   //of SlaterDeterminant objects is the best choice; will implement later
-  int num_slater_determinants = constructSlaterDeterminants(slater_determinants, num_particles, states);
+  int num_slater_determinants = constructSlaterDeterminants(slater_determinants, num_particles, single_particle_states);
   if (num_slater_determinants == 0){
     std::cout << "ERROR: No slater determinants found!" << std::endl;
     return -1;
   }
+  mat hamiltonian = zeros(num_slater_determinants, num_slater_determinants);
+  vec energies = zeros(num_slater_determinants,1);
+  vec eigenvectors = zeros(num_slater_determinants,1);
 
   if (buildHamiltonian(hamiltonian, slater_determinants, interaction_strength, single_particle_states) != 0){
     std::cout << "ERROR: Failed to build Hamiltonian!" << std::endl;
@@ -135,6 +126,7 @@ int runShellModelCalculation(std::string single_particle_states_file_name, int n
 
   eig_sym(energies, eigenvectors, hamiltonian);
 
+  return 0; 
 }
 
 
