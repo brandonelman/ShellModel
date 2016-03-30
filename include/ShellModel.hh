@@ -8,13 +8,13 @@
 #include "State.hh"
 
 
-int readSingleParticleStates(std::string const &file_name, std::vector<State> &single_particle_states);
-int runShellModelCalculation(std::string, int, int);
-int constructSlaterDeterminants(std::vector< std::vector<int> > slater_determinants, int num_particles, std::vector<State> states);
+int readSingleParticleStates(std::string const &file_name, int num_sp_states);
+int runShellModelCalculation(int, int, int);
+int constructSlaterDeterminants(std::vector< std::vector<int> > slater_determinants, int num_particles, int num_sp_states);
 
 //See notes on Full Configuration interaction, pg. 25) for meaning of variables
 //p,q,r,s are single particle states; alpha is slate_determinant index
-int buildHamiltonian(arma::mat &hamiltonian, std::vector< std::vector<int> > slater_determinants, double interaction_strength, std::vector<State> const sp_states);
+int buildHamiltonian(arma::mat &hamiltonian, std::vector< std::vector<int> > slater_determinants, double interaction_strength, int num_sp_states);
 
 
 #endif
