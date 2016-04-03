@@ -2,7 +2,7 @@ CC = g++
 CFLAGS = -g -Wall
 
 all: ShellModel
-ARMADILLO_BASE=/user/poxonpea/armadillo-6.500.5
+ARMADILLO_BASE=/user/elman/libraries/armadillo-6.400.3
 ARMADILLO_INCLUDE=$(ARMADILLO_BASE)/include
 
 LIBS=-llapack -lblas -L$(ARMADILLO_BASE) 
