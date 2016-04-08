@@ -13,7 +13,14 @@ int constructSlaterDeterminants(std::vector< std::vector<int> > &slater_determin
   }
   int num_pairs = num_particles/2;
   int num_pair_states = num_sp_states/2;
-  if (num_pairs == 2){
+  if (num_pairs == 1){
+    for (int i = 1; i <= num_pair_states;i++){
+      temp_sd.clear();
+      temp_sd.push_back(i);
+      slater_determinants.push_back(temp_sd);
+    }
+  }
+  else if (num_pairs == 2){
     for (int i = 1; i < num_pair_states; i++){
       for (int j = i+1; j <= num_pair_states; j++){
         temp_sd.clear();
